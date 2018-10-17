@@ -20,12 +20,11 @@ public class PlayerControl : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         audioSource = GetComponent<AudioSource>();
-        winText.text = "Still Playing";
+        //winText.text = "Still Playing";
     }
 
     void Update()
     {
-
         if (characterController.isGrounded)
         {
             moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
@@ -35,6 +34,7 @@ public class PlayerControl : MonoBehaviour
             if (Input.GetButton("Jump"))
             {
                 moveDirection.y = jumpSpeed;
+                audioSource.Play();
             }
         }
         else
@@ -45,20 +45,18 @@ public class PlayerControl : MonoBehaviour
             moveDirection.z *= speed;
         }
 
+        transform.Rotate(new Vector3(0f, Input.GetAxis("Mouse X") * speed / 2.0f, 0f));
+        
         moveDirection.y -= gravity * Time.deltaTime;
         characterController.Move(moveDirection * Time.deltaTime);
     }
 
-    void OnCollisionEnter (Collider other)
+    void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.CompareTag("Target"))
+        if (other.gameObject.name == "Target")
         {
-            audioSource.Play();
-            winText.text = "You win!";
+            other.gameObject.GetComponent<AudioSource>().Play();
+            //winText.text = "You win!";
         }   
-        else 
-        {
-            winText.text = "You lose!";
-        }
     }
 }
